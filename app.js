@@ -24,7 +24,7 @@ searchInput.addEventListener("input", e => {
 searchForm.addEventListener("submit", e => {
   e.preventDefault();
   sessionStorage.setItem("query", searchValue.trim());
-  window.location.href = "./search";
+  window.location.href = "/pic-perfect/search";
 });
 
 //Popup event listeners
