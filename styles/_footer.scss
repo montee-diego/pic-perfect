@@ -1,0 +1,30 @@
+footer {
+  background: $footerColor;
+}
+
+.footer-container {
+  @include flex(space-between, center, row);
+  min-height: 10vh;
+  width: 95%;
+  margin: auto;
+  font-weight: 300;
+}
+
+.legals {
+  p {
+    display: inline;
+  }
+
+  a {
+    color: $fadedColor;
+  }
+}
+
+.socials {
+  @include flex(center, center, row);
+
+  a {
+    padding: 0.5rem;
+    margin: 0rem 0.5em;
+  }
+}

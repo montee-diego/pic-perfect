@@ -1,0 +1,54 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  @include flex(flex-start, stretch, column);
+  min-height: 100vh;
+  background: $bodyColor;
+  color: $textColor;
+  font-family: "Roboto", sans-serif;
+  overflow-x: hidden;
+}
+
+i {
+  pointer-events: none;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: $textColor;
+  white-space: nowrap;
+}
+
+button {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  color: $textColor;
+  cursor: pointer;
+}
+
+input {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  color: $textColor;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+main {
+  flex: 1;
+}
+
+section {
+  width: 95%;
+  margin: 2rem auto;
+}

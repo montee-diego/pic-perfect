@@ -1,0 +1,60 @@
+@media screen and (max-width: 800px) {
+  nav {
+    @include flex(center, stretch, column);
+  }
+
+  #logo {
+    align-self: center;
+    margin-top: 5px;
+  }
+
+  .nav-links {
+    justify-content: space-evenly;
+    flex-basis: 100%;
+    order: 2;
+    margin: 0;
+
+    li {
+      flex: 1;
+      margin: 0;
+
+      a {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0px;
+      }
+    }
+  }
+
+  .page-active {
+    box-shadow: inset 0px -3px $highlightColor;
+  }
+
+  .search-form {
+    flex: 1;
+    margin: 5px 0px;
+  }
+
+  .search-input {
+    flex: 1;
+  }
+
+  .footer-container {
+    @include flex(space-evenly, center, column);
+  }
+
+  .legals {
+    text-align: center;
+  }
+
+  .socials {
+    width: 100%;
+    justify-content: space-evenly;
+
+    a {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

@@ -1,0 +1,52 @@
+header {
+  position: sticky;
+  top: 0px;
+  background: $navbarColor;
+  border-bottom: 1px solid $bodyColor;
+  z-index: 10;
+}
+
+nav {
+  @include flex(space-between, center, row);
+  min-height: 10vh;
+  width: 95%;
+  margin: auto;
+}
+
+#logo {
+  font-family: "Cookie", cursive;
+  font-size: 3rem;
+}
+
+.nav-links {
+  @include flex(space-between, center, row);
+  margin-left: auto;
+
+  li {
+    margin: 0px 10px;
+
+    a {
+      padding: 10px 10px;
+    }
+  }
+}
+
+.search-form {
+  @include flex(center, center, row);
+  background: $highlightColor;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  padding: 7px 10px;
+}
+
+.search-button {
+  background: transparent;
+  border: none;
+  align-self: stretch;
+  padding: 0px 10px;
+}

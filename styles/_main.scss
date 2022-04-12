@@ -1,0 +1,149 @@
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+
+.filter {
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: $textColor;
+  }
+}
+
+.filter-trending,
+.filter-collections {
+  display: flex;
+  flex-wrap: wrap;
+
+  a {
+    font-weight: 300;
+    padding: 0.5rem;
+  }
+}
+
+.tag {
+  display: flex;
+  margin: 1rem 0.5rem 0rem 0rem;
+  background: $cardColor;
+  border-radius: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.25s ease;
+
+  button {
+    align-self: stretch;
+    background: transparent;
+    border: none;
+    border-left: 1px solid $bodyColor;
+    cursor: default;
+    padding: 0rem 0.5rem;
+    transition: color 0.5s ease;
+
+    &:hover {
+      color: $removeColor;
+    }
+  }
+
+  &:hover {
+    background: $cardHighlightColor;
+  }
+
+  &.active {
+    background: $highlightColor;
+  }
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  border-radius: 5px;
+  background: $cardColor;
+  overflow: hidden;
+  transition: all 1s ease-in;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: photoLoading 1s linear forwards;
+  }
+}
+
+.card-info {
+  @include position(absolute, 0, 0, none, none, 100%, 100%);
+  z-index: 5;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+
+  &:hover {
+    background: $shadowColor;
+    opacity: 1;
+  }
+}
+
+.card-artist {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.card-action {
+  @include position(absolute, 50%, 0, none, none, 100%, none);
+  @include flex(center, stretch, row);
+  transform: translateY(-50%);
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  color: $footerColor;
+  background: $textColor;
+  border-radius: 5px;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0rem 0.5rem;
+  cursor: pointer;
+}
+
+.card-remove {
+  @include position(absolute, 1rem, none, none, 1rem, none, none);
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  opacity: 0.5;
+  transition: opacity 0.25s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.loading {
+  background-image: linear-gradient(to right, $cardColor 10%, $cardHighlightColor 50%, $cardColor 100%);
+  background-size: 200% 100%;
+  animation: photoPlaceholder 1s linear infinite;
+  z-index: 5;
+}
+
+@keyframes photoPlaceholder {
+  0% {
+    background-position: 50% 0;
+  }
+
+  100% {
+    background-position: -150% 0;
+  }
+}
+
+@keyframes photoLoading {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

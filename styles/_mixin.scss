@@ -1,0 +1,28 @@
+@mixin flex($justify, $align, $direction) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $align;
+  flex-direction: $direction;
+}
+
+@mixin position($position, $top, $left, $bottom, $right, $width, $height) {
+  position: $position;
+  @if $top != none {
+    top: $top;
+  }
+  @if $left != none {
+    left: $left;
+  }
+  @if $bottom != none {
+    bottom: $bottom;
+  }
+  @if $right != none {
+    right: $right;
+  }
+  @if $width != none {
+    width: $width;
+  }
+  @if $height != none {
+    height: $height;
+  }
+}

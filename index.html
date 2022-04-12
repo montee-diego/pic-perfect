@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg" />
+    <title>PicPerfect | Home</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a id="logo" href="../">PicPerfect</a>
+        <ul class="nav-links">
+          <li class="page-active"><a href="./">Home</a></li>
+          <li><a href="./trending/">Trending</a></li>
+          <li><a href="./collections/">Collections</a></li>
+        </ul>
+        <form class="search-form">
+          <input type="text" minlength="1" maxlength="30" class="search-input" required />
+          <button type="submit" class="search-button">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </nav>
+    </header>
+
+    <main>
+      <section class="gallery"></section>
+      <section class="loader">
+        <div class="lds-ellipsis">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="popup-container popup-menu">
+      <div class="popup">
+        <div class="popup-title">
+          <h2>Add to collection</h2>
+          <button class="popup-close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="popup-content"></div>
+        <form class="popup-form">
+          <input type="text" class="popup-input" size="5" minlength="1" maxlength="30" required />
+          <button type="submit">Create</button>
+        </form>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-container">
+        <div class="legals">
+          <p>PicPerfect &copy; 2022</p>
+          <a href="https://pexels.com">Photos provided by Pexels</a>
+        </div>
+        <div class="socials">
+          <a href="https://instagram.com">Instagram</a>
+          <a href="https://twitter.com">Twitter</a>
+          <a href="https://linkedin.com">LinkedIn</a>
+          <a href="https://youtube.com">Youtube</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+    <script src="./home.js"></script>
+  </body>
+</html>
