@@ -281,7 +281,6 @@ function updateImageInfo(photo) {
 
   btnDownload.href = `${photo.src.original}?dl=`
   btnDownload.download = true
-  btnDownload.target = "_blank"
   btnDownload.classList.add("card-icon")
   btnDownload.innerHTML = '<i class="fas fa-download"></i>'
 
