@@ -3,6 +3,7 @@ const searchQuery = sessionStorage.getItem("query");
 
 //If query, perform search and clear query value
 if (searchQuery) {
-  loadSearchResults(searchQuery, requestUID());
+  //loadSearchResults(searchQuery, requestUID());
+  pexels.fetchSearch(searchQuery, requestUID());
   sessionStorage.removeItem("query");
 }

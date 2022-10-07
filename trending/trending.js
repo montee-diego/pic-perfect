@@ -46,7 +46,8 @@ function loadTags(tags) {
       loader.style.display = "flex";
 
       //Load tag photos
-      loadTagSearch(tag, requestUID());
+      //loadTagSearch(tag, requestUID());
+      pexels.fetchTag(tag, requestUID());
     });
 
     trendingContainer.append(trendingLink);
@@ -55,4 +56,5 @@ function loadTags(tags) {
 
 //Feed TRENDING page
 loadTags(randomTags);
-loadTagSearch(randomTags[curIndex], requestUID());
+//loadTagSearch(randomTags[curIndex], requestUID());
+pexels.fetchTag(randomTags[curIndex], requestUID());

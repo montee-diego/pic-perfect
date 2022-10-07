@@ -6197,7 +6197,9 @@ header {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
-  background: #24242f;
+  background: #24242fef;
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
   border-bottom: 1px solid #1a1a20;
   z-index: 10;
 }

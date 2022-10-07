@@ -2,6 +2,7 @@ header {
   position: sticky;
   top: 0px;
   background: $navbarColor;
+  backdrop-filter: blur(5px);
   border-bottom: 1px solid $bodyColor;
   z-index: 10;
 }

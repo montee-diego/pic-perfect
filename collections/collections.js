@@ -92,7 +92,8 @@ function loadLovedPhotos(e) {
       window.clearInterval(timerID);
       timerID = null;
     }
-    loadSinglePhoto(db.loved[photoSequence], photoSequence, photoUID);
+    //loadSinglePhoto(db.loved[photoSequence], photoSequence, photoUID);
+    pexels.fetchSingle(db.loved[photoSequence], photoSequence, photoUID);
     photoSequence++;
   }, 1000);
 
@@ -130,7 +131,8 @@ function loadCollectionPhotos(e) {
       window.clearInterval(timerID);
       timerID = null;
     }
-    loadSinglePhoto(photos[photoSequence], photoSequence, photoUID);
+    //loadSinglePhoto(photos[photoSequence], photoSequence, photoUID);
+    pexels.fetchSingle(photos[photoSequence], photoSequence, photoUID);
     photoSequence++;
   }, 1000);
 

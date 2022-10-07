@@ -101,3 +101,83 @@ class Database {
     localStorage.setItem("database", JSON.stringify(this.data));
   }
 }
+
+// Pexels API
+class Pexels {
+  constructor() {
+    this.key = "563492ad6f91700001000001705460ee8df94dd1a55897c1d7c04613";
+    this.endpoint = "https://api.pexels.com/v1";
+  }
+
+  async fetch(url, host = true) {
+    const data = await fetch(host ? this.endpoint + url : url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: this.key,
+      },
+    });
+
+    return await data.json();
+  }
+
+  async fetchHome(uid) {
+    const data = await this.fetch(`/curated?per_page=15&page=1`);
+
+    if (data.total_results > 0) {
+      data.uid = uid;
+      loadImages(data, false, false);
+    }
+  }
+
+  async fetchSearch(query, uid) {
+    const data = await this.fetch(`/search?query=${query}&per_page=15&page=1`);
+
+    if (data.total_results == 0) {
+      updateResultInfo(query, false);
+    } else {
+      updateResultInfo(query, true);
+      data.uid = uid;
+      loadImages(data);
+    }
+  }
+
+  async fetchTag(tag, uid) {
+    const data = await this.fetch(`/search?query=${tag}&per_page=15&page=1`);
+
+    loader.style.display = "none";
+
+    if (data.total_results > 0) {
+      data.uid = uid;
+      loadImages(data);
+    }
+  }
+
+  async fetchSingle(id, index, uid) {
+    const data = await this.fetch(`/photos/${id}`);
+
+    if (data) {
+      loadImages(
+        {
+          total_results: 1,
+          photos: [data],
+          page: 1,
+          next_page: null,
+          index: index,
+          uid: uid,
+        },
+        false,
+        true
+      );
+    }
+  }
+
+  async fetchNextPage(url, uid) {
+    const data = await this.fetch(url, false);
+
+    if (data.total_results > 0) {
+      data.uid = uid;
+      loadImages(data);
+    }
+  }
+}

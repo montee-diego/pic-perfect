@@ -1,15 +1,10 @@
-//API Auth
-const auth = "563492ad6f91700001000001705460ee8df94dd1a55897c1d7c04613"
-
 //Variables
 let nextPageURL
 let searchValue
 let popupValue
-let db = new Database()
-let loved
-let collections
+const db = new Database()
+const pexels = new Pexels()
 let photoID
-let photoIndexDB
 
 //Element selectors
 const searchInput = document.querySelector(".search-input")
@@ -24,7 +19,7 @@ searchInput.addEventListener("input", e => {
 searchForm.addEventListener("submit", e => {
   e.preventDefault()
   sessionStorage.setItem("query", searchValue.trim())
-  window.location.href = "./search"
+  window.location.href = "/search"
 })
 
 //Popup event listeners
@@ -68,7 +63,8 @@ const observer = new IntersectionObserver(
 
     if (lastCard.isIntersecting) {
       if (nextPageURL) {
-        loadPage(nextPageURL, requestUID())
+        //loadPage(nextPageURL, requestUID())
+        pexels.fetchNextPage(nextPageURL, requestUID())
         observer.unobserve(lastCard.target)
 
         if (loader) {
@@ -87,86 +83,6 @@ const observer = new IntersectionObserver(
     rootMargin: "100px",
   }
 )
-
-//API REQUEST
-async function fetchAPI(url) {
-  const dataFetch = await fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: auth,
-    },
-  })
-
-  return await dataFetch.json()
-}
-
-//SEARCH FUNCTIONS
-async function loadHome(uid) {
-  const data = await fetchAPI(
-    "https://api.pexels.com/v1/curated?per_page=15&page=1"
-  )
-
-  if (data.total_results > 0) {
-    data.uid = uid
-    loadImages(data, false, false)
-  }
-}
-
-async function loadSearchResults(query, uid) {
-  const data = await fetchAPI(
-    `https://api.pexels.com/v1/search?query=${query}&per_page=15&page=1`
-  )
-
-  if (data.total_results == 0) {
-    updateResultInfo(query, false)
-  } else {
-    updateResultInfo(query, true)
-    data.uid = uid
-    loadImages(data)
-  }
-}
-
-async function loadTagSearch(tag, uid) {
-  const data = await fetchAPI(
-    `https://api.pexels.com/v1/search?query=${tag}&per_page=15&page=1`
-  )
-
-  loader.style.display = "none"
-
-  if (data.total_results > 0) {
-    data.uid = uid
-    loadImages(data)
-  }
-}
-
-async function loadSinglePhoto(id, index, uid) {
-  const data = await fetchAPI(`https://api.pexels.com/v1/photos/${id}`)
-
-  if (data) {
-    loadImages(
-      {
-        total_results: 1,
-        photos: [data],
-        page: 1,
-        next_page: null,
-        index: index,
-        uid: uid,
-      },
-      false,
-      true
-    )
-  }
-}
-
-async function loadPage(url, uid) {
-  const data = await fetchAPI(url)
-
-  if (data.total_results > 0) {
-    data.uid = uid
-    loadImages(data)
-  }
-}
 
 //SEARCH INFO
 function updateResultInfo(query, result) {
@@ -254,6 +170,7 @@ function loadImages(data, placeholder = true, append = true) {
 
     image.src = photo.src.large
     image.alt = photo.alt
+    image.loading = "lazy"
   })
 
   nextPageURL = data.next_page
