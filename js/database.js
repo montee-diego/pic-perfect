@@ -12,11 +12,21 @@ class Database {
   }
 
   findCollection(name) {
-    return this.collections.findIndex(col => col.name === name);
+    return this.collections.findIndex(col => col.name == name);
   }
 
   findLoved(id) {
-    return this.loved.findIndex(uid => uid === id);
+    return this.loved.findIndex(uid => uid == id);
+  }
+
+  getCollectionItems(name) {
+    const index = this.findCollection(name);
+
+    if (index > -1) {
+      return this.collections[index].items;
+    } else {
+      return [];
+    }
   }
 
   createCollection(name) {

@@ -5,7 +5,7 @@ const auth = "563492ad6f91700001000001705460ee8df94dd1a55897c1d7c04613"
 let nextPageURL
 let searchValue
 let popupValue
-let db
+let db = new Database()
 let loved
 let collections
 let photoID
@@ -38,23 +38,46 @@ popupInput.addEventListener("input", e => {
 })
 
 popupForm.addEventListener("submit", e => {
-  const popupValueTrimmed = popupValue.trim()
   e.preventDefault()
 
-  if (collections.includes(popupValueTrimmed)) {
+  const popupValueTrimmed = popupValue.trim()
+  const response = db.createCollection(popupValueTrimmed)
+  
+  if (response === "FAILED") {
     popupInput.setCustomValidity("This collection already exists.")
     popupInput.reportValidity()
-  } else {
     popupInput.setCustomValidity("")
-
-    collections.push(popupValueTrimmed)
-
+  } else {
     updateCollectionList(popupValueTrimmed)
-    updateStorage("collections", collections)
-
     popupInput.value = ""
     popupValue = ""
   }
+
+  //popupInput.setCustomValidity("")
+  //popupInput.reportValidity()
+
+  
+
+  // console.log(db.findCollection(popupValueTrimmed))
+  // console.log(db.collections)
+
+  //if (collections.includes(popupValueTrimmed)) {
+  // if (db.findCollection(popupValueTrimmed) > -1) {
+  //   popupInput.setCustomValidity("This collection already exists.")
+  //   popupInput.reportValidity()
+  //   popupInput.setCustomValidity("")
+  // } else {
+  //   popupInput.setCustomValidity("")
+
+  //   //collections.push(popupValueTrimmed)
+  //   db.createCollection(popupValueTrimmed)
+
+  //   updateCollectionList(popupValueTrimmed)
+  //   //updateStorage("collections", collections)
+
+  //   popupInput.value = ""
+  //   popupValue = ""
+  // }
 })
 
 document.addEventListener("keydown", e => {
@@ -271,7 +294,7 @@ function loadImages(data, placeholder = true, append = true) {
 
 function updateImageInfo(photo) {
   const trendingContainer = document.querySelector(".filter-collections")
-  const photoLoved = loved.findIndex(item => item.id == photo.id)
+  const photoLoved = db.findLoved(photo.id)
   const photoInfo = document.createElement("div")
   const photoArtist = document.createElement("a")
   const photoAction = document.createElement("div")
@@ -290,8 +313,8 @@ function updateImageInfo(photo) {
 
   btnLove.classList.add("card-icon")
   btnLove.addEventListener("click", updateLovedPhoto)
-
-  if (photoLoved >= 0) {
+  
+  if (photoLoved > -1) {
     btnLove.innerHTML = '<i class="fas fa-heart"></i>'
   } else {
     btnLove.innerHTML = '<i class="far fa-heart"></i>'
@@ -322,63 +345,65 @@ function updateImageInfo(photo) {
 
 //LOVE PHOTOS
 function updateLovedPhoto(e) {
-  const photoID = e.target.parentNode.dataset.id
-  const photoLoved = loved.findIndex(item => item.id == photoID)
+  db.setLoved(e.target.parentNode.dataset.id, e.target)
+  // const photoID = e.target.parentNode.dataset.id
+  // const photoLoved = loved.findIndex(item => item.id == photoID)
 
-  if (photoLoved >= 0) {
-    loved.splice(photoLoved, 1)
-    e.target.innerHTML = '<i class="far fa-heart"></i>'
-  } else {
-    loved.push({ id: photoID })
-    e.target.innerHTML = '<i class="fas fa-heart"></i>'
-  }
+  // if (photoLoved >= 0) {
+  //   loved.splice(photoLoved, 1)
+  //   e.target.innerHTML = '<i class="far fa-heart"></i>'
+  // } else {
+  //   loved.push({ id: photoID })
+  //   e.target.innerHTML = '<i class="fas fa-heart"></i>'
+  // }
 
-  updateStorage("loved", loved)
+  // updateStorage("loved", loved)
 }
 
 //LOCAL STORAGE
-function loadStorage() {
-  //Loved photos
-  if (localStorage.getItem("loved") === null) {
-    loved = []
-  } else {
-    loved = JSON.parse(localStorage.getItem("loved"))
-  }
+// function loadStorage() {
+//   //Loved photos
+//   if (localStorage.getItem("loved") === null) {
+//     loved = []
+//   } else {
+//     loved = JSON.parse(localStorage.getItem("loved"))
+//   }
 
-  //Collections
-  if (localStorage.getItem("collections") === null) {
-    collections = []
-  } else {
-    collections = JSON.parse(localStorage.getItem("collections"))
-  }
+//   //Collections
+//   if (localStorage.getItem("collections") === null) {
+//     collections = []
+//   } else {
+//     collections = JSON.parse(localStorage.getItem("collections"))
+//   }
 
-  //Database
-  if (localStorage.getItem("database") === null) {
-    db = []
-  } else {
-    db = JSON.parse(localStorage.getItem("database"))
-  }
-}
+//   //Database
+//   if (localStorage.getItem("database") === null) {
+//     db = []
+//   } else {
+//     db = JSON.parse(localStorage.getItem("database"))
+//   }
+// }
 
-function updateStorage(id, data) {
-  localStorage.setItem(id, JSON.stringify(data))
-}
+// function updateStorage(id, data) {
+//   localStorage.setItem(id, JSON.stringify(data))
+// }
 
 //COLLECTIONS
 function openCollections(e) {
   const popupClose = document.querySelector(".popup-close")
 
   photoID = e.target.parentNode.dataset.id
-  photoIndexDB = db.findIndex(item => item.id == photoID)
+  //photoIndexDB = db.findIndex(item => item.id == photoID)
 
   //Generate menu for selected photo
-  collections.forEach(collection => {
+  db.collections.forEach(collection => {
     const popupItem = document.createElement("button")
 
-    popupItem.innerText = collection
+    popupItem.innerText = collection.name
     popupItem.classList.add("popup-item")
 
-    if (photoIndexDB >= 0 && db[photoIndexDB].name.includes(collection)) {
+    //if (photoIndexDB >= 0 && db[photoIndexDB].name.includes(collection)) {
+    if (collection.items.includes(photoID)) {
       popupItem.classList.add("added")
     } else {
       popupItem.addEventListener("click", updateCollectionDB)
@@ -394,7 +419,7 @@ function openCollections(e) {
     popupInput.value = ""
     popupValue = ""
     photoID = null
-    photoIndexDB = null
+    //photoIndexDB = null
 
     //Clear list
     while (popupContent.hasChildNodes()) {
@@ -414,7 +439,7 @@ function updateCollectionList(name) {
   popupContent.append(popupItem)
 
   if (trendingContainer) {
-    loadCollections(["Loved", ...collections])
+    loadCollections([{ name: "Loved" }, ...db.collections])
   }
 }
 
@@ -423,17 +448,19 @@ function updateCollectionDB(e) {
 
   const name = e.target.innerText
 
-  if (photoIndexDB >= 0) {
-    db[photoIndexDB].name.push(name)
-  } else {
-    db.push({
-      id: photoID,
-      name: [name],
-    })
-  }
+  db.addToCollection(name, photoID)
 
-  updateStorage("database", db)
+  // if (photoIndexDB >= 0) {
+  //   db[photoIndexDB].name.push(name)
+  // } else {
+  //   db.push({
+  //     id: photoID,
+  //     name: [name],
+  //   })
+  // }
+
+  // updateStorage("database", db)
 }
 
 //Load storage for basic functionality
-loadStorage()
+//loadStorage()

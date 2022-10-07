@@ -44,7 +44,7 @@ function loadCollections(list) {
 
     itemWrapper.classList.add("tag");
     itemWrapper.dataset.index = index;
-    itemName.innerText = entry;
+    itemName.innerText = entry.name;
     itemRemove.innerHTML = '<i class="fas fa-times"></i>';
 
     if (curIndex == index) {
@@ -76,14 +76,14 @@ function loadLovedPhotos(e) {
     window.clearInterval(timerID);
   }
 
-  let photoCount = loved.length;
+  let photoCount = db.loved.length;
   let photoSequence = 0;
   let photoUID = requestUID();
 
   clearGallery();
   updateCurIndex(e);
 
-  if (!loved.length) {
+  if (!photoCount) {
     return;
   }
 
@@ -92,7 +92,7 @@ function loadLovedPhotos(e) {
       window.clearInterval(timerID);
       timerID = null;
     }
-    loadSinglePhoto(loved[photoSequence].id, photoSequence, photoUID);
+    loadSinglePhoto(db.loved[photoSequence], photoSequence, photoUID);
     photoSequence++;
   }, 1000);
 
@@ -113,7 +113,8 @@ function loadCollectionPhotos(e) {
 
   let photoSequence = 0;
   let photoCollection = e.target.innerText;
-  let photos = db.filter(entry => entry.name.includes(photoCollection));
+  //let photos = db.filter(entry => entry.name.includes(photoCollection));
+  let photos = db.getCollectionItems(photoCollection);
   let photoUID = requestUID();
 
   clearGallery();
@@ -130,7 +131,7 @@ function loadCollectionPhotos(e) {
       window.clearInterval(timerID);
       timerID = null;
     }
-    loadSinglePhoto(photos[photoSequence].id, photoSequence, photoUID);
+    loadSinglePhoto(photos[photoSequence], photoSequence, photoUID);
     photoSequence++;
   }, 1000);
 
@@ -140,7 +141,7 @@ function loadCollectionPhotos(e) {
 //OPEN REMOVE COLLECTION PROMPT
 function openPrompt(e) {
   const index = e.target.parentNode.dataset.index - 1;
-  const name = collections[index];
+  const name = db.collections[index].name;
   const message = "All of its content will be removed. This action cannot be undone.";
 
   const promptAction = document.querySelector(".remove-btn");
@@ -158,7 +159,7 @@ function openPrompt(e) {
 //OPEN REMOVE PHOTO PROMPT
 function openRemovePrompt(e) {
   photoID = e.target.previousElementSibling.dataset.id;
-  photoIndexDB = db.findIndex(item => item.id == photoID);
+  //photoIndexDB = db.findIndex(item => item.id == photoID);
 
   const promptAction = document.querySelector(".remove-btn");
   const promptTitle = document.querySelector(".prompt-title");
@@ -172,18 +173,21 @@ function openRemovePrompt(e) {
 }
 
 function removePhoto(e) {
-  const name = collections[curIndex];
+  const name = db.collections[curIndex - 1].name;
+  console.log(name);
 
-  if (photoIndexDB >= 0) {
-    if (db[photoIndexDB].name.length > 1) {
-      const collectionIndex = db[photoIndexDB].name.findIndex(item => item == name);
-      db[photoIndexDB].name.splice(collectionIndex, 1);
-    } else {
-      db.splice(photoIndexDB, 1);
-    }
-  }
+  db.removeFromCollection(name, photoID);
 
-  updateStorage("database", db);
+  // if (photoIndexDB >= 0) {
+  //   if (db[photoIndexDB].name.length > 1) {
+  //     const collectionIndex = db[photoIndexDB].name.findIndex(item => item == name);
+  //     db[photoIndexDB].name.splice(collectionIndex, 1);
+  //   } else {
+  //     db.splice(photoIndexDB, 1);
+  //   }
+  // }
+
+  // updateStorage("database", db);
 
   const cards = document.querySelectorAll(".card-action");
   const gallery = document.querySelector(".gallery");
@@ -197,26 +201,29 @@ function removePhoto(e) {
 
   popupPrompt.classList.remove("popup-active");
   photoID = null;
-  photoIndexDB = null;
+  //photoIndexDB = null;
 }
 
 //REMOVE COLLECTION AND ITS CONTENT
 function removeCollection(e) {
   let index = Number(e.target.dataset.index);
-  const name = collections[index];
+  const name = db.collections[index].name;
+  console.log(name);
+
+  db.removeCollection(name);
 
   //Search and remove every photo in collection (unless it is also in another collection)
-  for (let i = db.length - 1; i >= 0; i--) {
-    if (db[i].name.includes(name) && db[i].name.length == 1) {
-      db.splice(i, 1);
-    }
-  }
+  // for (let i = db.length - 1; i >= 0; i--) {
+  //   if (db[i].name.includes(name) && db[i].name.length == 1) {
+  //     db.splice(i, 1);
+  //   }
+  // }
 
-  collections.splice(index, 1);
+  // collections.splice(index, 1);
 
-  //Update local storage
-  updateStorage("database", db);
-  updateStorage("collections", collections);
+  // //Update local storage
+  // updateStorage("database", db);
+  // updateStorage("collections", collections);
 
   //Update and load collections again
   index++;
@@ -226,11 +233,11 @@ function removeCollection(e) {
     curIndex = null;
   }
 
-  loadCollections(["Loved", ...collections]);
+  loadCollections([{ name: "Loved" }, ...db.collections]);
 
   //Close popup
   popupPrompt.classList.remove("popup-active");
 }
 
 //Feed COLLECTIONS page
-loadCollections(["Loved", ...collections]);
+loadCollections([{ name: "Loved" }, ...db.collections]);
