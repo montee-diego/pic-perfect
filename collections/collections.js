@@ -113,7 +113,6 @@ function loadCollectionPhotos(e) {
 
   let photoSequence = 0;
   let photoCollection = e.target.innerText;
-  //let photos = db.filter(entry => entry.name.includes(photoCollection));
   let photos = db.getCollectionItems(photoCollection);
   let photoUID = requestUID();
 
@@ -159,7 +158,6 @@ function openPrompt(e) {
 //OPEN REMOVE PHOTO PROMPT
 function openRemovePrompt(e) {
   photoID = e.target.previousElementSibling.dataset.id;
-  //photoIndexDB = db.findIndex(item => item.id == photoID);
 
   const promptAction = document.querySelector(".remove-btn");
   const promptTitle = document.querySelector(".prompt-title");
@@ -178,17 +176,6 @@ function removePhoto(e) {
 
   db.removeFromCollection(name, photoID);
 
-  // if (photoIndexDB >= 0) {
-  //   if (db[photoIndexDB].name.length > 1) {
-  //     const collectionIndex = db[photoIndexDB].name.findIndex(item => item == name);
-  //     db[photoIndexDB].name.splice(collectionIndex, 1);
-  //   } else {
-  //     db.splice(photoIndexDB, 1);
-  //   }
-  // }
-
-  // updateStorage("database", db);
-
   const cards = document.querySelectorAll(".card-action");
   const gallery = document.querySelector(".gallery");
 
@@ -201,7 +188,6 @@ function removePhoto(e) {
 
   popupPrompt.classList.remove("popup-active");
   photoID = null;
-  //photoIndexDB = null;
 }
 
 //REMOVE COLLECTION AND ITS CONTENT
@@ -211,19 +197,6 @@ function removeCollection(e) {
   console.log(name);
 
   db.removeCollection(name);
-
-  //Search and remove every photo in collection (unless it is also in another collection)
-  // for (let i = db.length - 1; i >= 0; i--) {
-  //   if (db[i].name.includes(name) && db[i].name.length == 1) {
-  //     db.splice(i, 1);
-  //   }
-  // }
-
-  // collections.splice(index, 1);
-
-  // //Update local storage
-  // updateStorage("database", db);
-  // updateStorage("collections", collections);
 
   //Update and load collections again
   index++;

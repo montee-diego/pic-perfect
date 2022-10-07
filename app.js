@@ -52,32 +52,6 @@ popupForm.addEventListener("submit", e => {
     popupInput.value = ""
     popupValue = ""
   }
-
-  //popupInput.setCustomValidity("")
-  //popupInput.reportValidity()
-
-  
-
-  // console.log(db.findCollection(popupValueTrimmed))
-  // console.log(db.collections)
-
-  //if (collections.includes(popupValueTrimmed)) {
-  // if (db.findCollection(popupValueTrimmed) > -1) {
-  //   popupInput.setCustomValidity("This collection already exists.")
-  //   popupInput.reportValidity()
-  //   popupInput.setCustomValidity("")
-  // } else {
-  //   popupInput.setCustomValidity("")
-
-  //   //collections.push(popupValueTrimmed)
-  //   db.createCollection(popupValueTrimmed)
-
-  //   updateCollectionList(popupValueTrimmed)
-  //   //updateStorage("collections", collections)
-
-  //   popupInput.value = ""
-  //   popupValue = ""
-  // }
 })
 
 document.addEventListener("keydown", e => {
@@ -346,54 +320,13 @@ function updateImageInfo(photo) {
 //LOVE PHOTOS
 function updateLovedPhoto(e) {
   db.setLoved(e.target.parentNode.dataset.id, e.target)
-  // const photoID = e.target.parentNode.dataset.id
-  // const photoLoved = loved.findIndex(item => item.id == photoID)
-
-  // if (photoLoved >= 0) {
-  //   loved.splice(photoLoved, 1)
-  //   e.target.innerHTML = '<i class="far fa-heart"></i>'
-  // } else {
-  //   loved.push({ id: photoID })
-  //   e.target.innerHTML = '<i class="fas fa-heart"></i>'
-  // }
-
-  // updateStorage("loved", loved)
 }
-
-//LOCAL STORAGE
-// function loadStorage() {
-//   //Loved photos
-//   if (localStorage.getItem("loved") === null) {
-//     loved = []
-//   } else {
-//     loved = JSON.parse(localStorage.getItem("loved"))
-//   }
-
-//   //Collections
-//   if (localStorage.getItem("collections") === null) {
-//     collections = []
-//   } else {
-//     collections = JSON.parse(localStorage.getItem("collections"))
-//   }
-
-//   //Database
-//   if (localStorage.getItem("database") === null) {
-//     db = []
-//   } else {
-//     db = JSON.parse(localStorage.getItem("database"))
-//   }
-// }
-
-// function updateStorage(id, data) {
-//   localStorage.setItem(id, JSON.stringify(data))
-// }
 
 //COLLECTIONS
 function openCollections(e) {
   const popupClose = document.querySelector(".popup-close")
 
   photoID = e.target.parentNode.dataset.id
-  //photoIndexDB = db.findIndex(item => item.id == photoID)
 
   //Generate menu for selected photo
   db.collections.forEach(collection => {
@@ -402,7 +335,6 @@ function openCollections(e) {
     popupItem.innerText = collection.name
     popupItem.classList.add("popup-item")
 
-    //if (photoIndexDB >= 0 && db[photoIndexDB].name.includes(collection)) {
     if (collection.items.includes(photoID)) {
       popupItem.classList.add("added")
     } else {
@@ -419,7 +351,6 @@ function openCollections(e) {
     popupInput.value = ""
     popupValue = ""
     photoID = null
-    //photoIndexDB = null
 
     //Clear list
     while (popupContent.hasChildNodes()) {
@@ -449,18 +380,4 @@ function updateCollectionDB(e) {
   const name = e.target.innerText
 
   db.addToCollection(name, photoID)
-
-  // if (photoIndexDB >= 0) {
-  //   db[photoIndexDB].name.push(name)
-  // } else {
-  //   db.push({
-  //     id: photoID,
-  //     name: [name],
-  //   })
-  // }
-
-  // updateStorage("database", db)
 }
-
-//Load storage for basic functionality
-//loadStorage()
