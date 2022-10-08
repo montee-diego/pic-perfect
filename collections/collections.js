@@ -1,10 +1,10 @@
-//Select elements
+// Select elements
 const trendingContainer = document.querySelector(".filter-collections");
 const popupPrompt = document.querySelector(".popup-prompt");
 const promptClose = document.querySelector(".prompt-close");
 const promptCancel = document.querySelector(".cancel-btn");
 
-//Event listeners
+// Event listeners
 promptClose.addEventListener("click", () => {
   popupPrompt.classList.remove("popup-active");
 });
@@ -13,18 +13,18 @@ promptCancel.addEventListener("click", () => {
   popupPrompt.classList.remove("popup-active");
 });
 
-//Store active
+// Store active
 let inView = "";
 let timerID = null;
 
-//Load collection buttons
+// Load collection buttons
 function loadCollections(list) {
   //Remove first (useful when updating collections)
   while (trendingContainer.hasChildNodes()) {
     trendingContainer.removeChild(trendingContainer.lastChild);
   }
 
-  //Create elements from array
+  // Create elements from array
   list.forEach((entry, index) => {
     const itemWrapper = document.createElement("div");
     const itemName = document.createElement("a");
@@ -94,7 +94,7 @@ function loadCollection(event) {
   }
 }
 
-//OPEN REMOVE COLLECTION PROMPT
+// OPEN REMOVE COLLECTION PROMPT
 function openPrompt(e) {
   const name = e.target.previousElementSibling.innerText;
   const message = "All of its content will be removed. This action cannot be undone.";
@@ -111,7 +111,7 @@ function openPrompt(e) {
   promptAction.addEventListener("click", removeCollection);
 }
 
-//OPEN REMOVE PHOTO PROMPT
+// OPEN REMOVE PHOTO PROMPT
 function openRemovePrompt(e) {
   photoID = e.target.previousElementSibling.dataset.id;
 
@@ -134,7 +134,7 @@ function removePhoto(e) {
   photoID = null;
 }
 
-//REMOVE COLLECTION AND ITS CONTENT
+// REMOVE COLLECTION AND ITS CONTENT
 function removeCollection(e) {
   const name = e.target.dataset.name;
 
@@ -147,9 +147,9 @@ function removeCollection(e) {
 
   loadCollections([{ name: "Loved" }, ...db.collections]);
 
-  //Close popup
+  // Close popup
   popupPrompt.classList.remove("popup-active");
 }
 
-//Feed COLLECTIONS page
+// Feed COLLECTIONS page
 loadCollections([{ name: "Loved" }, ...db.collections]);

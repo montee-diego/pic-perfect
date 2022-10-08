@@ -1,5 +1,29 @@
-//Create trending tags, simulate back-end
-const trendingTags = ["nature", "winter", "new york", "cats", "fashion", "mountains", "europe", "dogs", "technology", "summer", "italy", "holidays", "fox", "france", "penguin", "birds", "sports", "cars", "audi", "bwm", "honda", "music", "people"];
+// Create trending tags, simulate back-end
+const trendingTags = [
+  "nature",
+  "winter",
+  "new york",
+  "cats",
+  "fashion",
+  "mountains",
+  "europe",
+  "dogs",
+  "technology",
+  "summer",
+  "italy",
+  "holidays",
+  "fox",
+  "france",
+  "penguin",
+  "birds",
+  "sports",
+  "cars",
+  "audi",
+  "bmw",
+  "honda",
+  "music",
+  "people",
+];
 const randomTags = (function (arr, num = 1) {
   const tags = [];
 
@@ -16,10 +40,10 @@ const randomTags = (function (arr, num = 1) {
   return tags;
 })(trendingTags, 10);
 
-//Store active
+// Store active
 let curIndex = 0;
 
-//Load tag links
+// Load tag links
 function loadTags(tags) {
   const trendingContainer = document.querySelector(".filter-trending");
 
@@ -41,10 +65,10 @@ function loadTags(tags) {
       newIndex.classList.add("active");
       curIndex = index;
 
-      //Update view
+      // Update view
       gallery.clear();
 
-      //Load tag photos
+      // Load tag photos
       pexels.fetchTag(tag);
     });
 
@@ -52,6 +76,6 @@ function loadTags(tags) {
   });
 }
 
-//Feed TRENDING page
+// Feed TRENDING page
 loadTags(randomTags);
 pexels.fetchTag(randomTags[curIndex]);
