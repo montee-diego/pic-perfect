@@ -128,10 +128,7 @@ function openRemovePrompt(e) {
 
 function removePhoto(e) {
   db.removeFromCollection(inView, photoID);
-
-  const target = gallery.container.querySelector(`[data-uid="${photoID}"]`);
-
-  gallery.container.removeChild(target);
+  gallery.remove(photoID);
 
   popupPrompt.classList.remove("popup-active");
   photoID = null;

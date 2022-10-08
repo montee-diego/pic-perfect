@@ -10,7 +10,6 @@ let photoID
 //Element selectors
 const searchInput = document.querySelector(".search-input")
 const searchForm = document.querySelector(".search-form")
-const loader = document.querySelector(".loader")
 
 //Search event listeners
 searchInput.addEventListener("input", e => {
@@ -67,14 +66,6 @@ const observer = new IntersectionObserver(
         //loadPage(nextPageURL, requestUID())
         pexels.fetchNextPage(nextPageURL)
         observer.unobserve(lastCard.target)
-
-        if (loader) {
-          loader.style.display = "flex"
-        }
-      } else {
-        if (loader) {
-          loader.style.display = "none"
-        }
       }
     } else {
       return
@@ -94,8 +85,6 @@ function updateResultInfo(query, result) {
   } else {
     searchInfo.innerText = `No results for "${query}"`
   }
-
-  loader.style.display = "none"
 }
 
 //REQUEST UID

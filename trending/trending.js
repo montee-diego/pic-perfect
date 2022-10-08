@@ -42,12 +42,9 @@ function loadTags(tags) {
       curIndex = index;
 
       //Update view
-      //clearGallery();
       gallery.clear();
-      loader.style.display = "flex";
 
       //Load tag photos
-      //loadTagSearch(tag, requestUID());
       pexels.fetchTag(tag);
     });
 
@@ -57,5 +54,4 @@ function loadTags(tags) {
 
 //Feed TRENDING page
 loadTags(randomTags);
-//loadTagSearch(randomTags[curIndex], requestUID());
 pexels.fetchTag(randomTags[curIndex]);

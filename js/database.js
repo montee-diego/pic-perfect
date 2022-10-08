@@ -109,7 +109,9 @@ class Gallery {
   }
 
   clear() {
-    this.container.innerHTML = "";
+    while (this.container.hasChildNodes()) {
+      this.container.removeChild(this.container.lastChild);
+    }
   }
 
   placeholder(data, clear = true) {
@@ -123,6 +125,14 @@ class Gallery {
         `<div class="card loading" data-uid="${photo.id || photo}"></div>`
       );
     });
+  }
+
+  remove(uid) {
+    const target = this.container.querySelector(`[data-uid="${uid}"]`);
+
+    if (target) {
+      this.container.removeChild(target);
+    }
   }
 
   updateMany(data) {
@@ -168,9 +178,12 @@ class Pexels {
   constructor() {
     this.key = "563492ad6f91700001000001705460ee8df94dd1a55897c1d7c04613";
     this.endpoint = "https://api.pexels.com/v1";
+    this.loader = document.querySelector(".loader");
   }
 
   set response(data) {
+    this.loading = false;
+
     if (data.total_results > 0) {
       gallery.updateMany(data);
     } else if (data.id) {
@@ -178,7 +191,15 @@ class Pexels {
     }
   }
 
+  set loading(state) {
+    if (this.loader) {
+      this.loader.style.display = state ? "flex" : "none";
+    }
+  }
+
   async fetch(url, path = true) {
+    this.loading = true;
+
     const data = await fetch(path ? this.endpoint + url : url, {
       method: "GET",
       headers: {
@@ -207,8 +228,6 @@ class Pexels {
 
   async fetchTag(tag) {
     this.response = await this.fetch(`/search?query=${tag}&per_page=15&page=1`);
-
-    loader.style.display = "none";
   }
 
   async fetchSingle(id) {
