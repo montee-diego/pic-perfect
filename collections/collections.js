@@ -78,14 +78,16 @@ function loadLovedPhotos(e) {
 
   let photoCount = db.loved.length;
   let photoSequence = 0;
-  let photoUID = requestUID();
+  //let photoUID = requestUID();
 
-  clearGallery();
+  //clearGallery();
   updateCurIndex(e);
 
   if (!photoCount) {
     return;
   }
+
+  gallery.placeholder(db.loved);
 
   timerID = window.setInterval(() => {
     if (photoCount - 1 == photoSequence) {
@@ -93,11 +95,11 @@ function loadLovedPhotos(e) {
       timerID = null;
     }
     //loadSinglePhoto(db.loved[photoSequence], photoSequence, photoUID);
-    pexels.fetchSingle(db.loved[photoSequence], photoSequence, photoUID);
+    pexels.fetchSingle(db.loved[photoSequence]);
     photoSequence++;
   }, 1000);
 
-  loadPlaceholder(photoCount, photoUID);
+  //loadPlaceholder(photoCount, photoUID);
 }
 
 //COLLECTIONS
@@ -115,14 +117,16 @@ function loadCollectionPhotos(e) {
   let photoSequence = 0;
   let photoCollection = e.target.innerText;
   let photos = db.getCollectionItems(photoCollection);
-  let photoUID = requestUID();
+  //let photoUID = requestUID();
 
-  clearGallery();
+  //clearGallery();
   updateCurIndex(e);
 
   if (!photos.length) {
     return;
   }
+
+  gallery.placeholder(photos);
 
   let photoCount = photos.length;
 
@@ -132,11 +136,11 @@ function loadCollectionPhotos(e) {
       timerID = null;
     }
     //loadSinglePhoto(photos[photoSequence], photoSequence, photoUID);
-    pexels.fetchSingle(photos[photoSequence], photoSequence, photoUID);
+    pexels.fetchSingle(photos[photoSequence]);
     photoSequence++;
   }, 1000);
 
-  loadPlaceholder(photoCount, photoUID);
+  //loadPlaceholder(photoCount, photoUID);
 }
 
 //OPEN REMOVE COLLECTION PROMPT

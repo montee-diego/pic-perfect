@@ -3,6 +3,7 @@ let nextPageURL
 let searchValue
 let popupValue
 const db = new Database()
+const gallery = new Gallery()
 const pexels = new Pexels()
 let photoID
 
@@ -64,7 +65,7 @@ const observer = new IntersectionObserver(
     if (lastCard.isIntersecting) {
       if (nextPageURL) {
         //loadPage(nextPageURL, requestUID())
-        pexels.fetchNextPage(nextPageURL, requestUID())
+        pexels.fetchNextPage(nextPageURL)
         observer.unobserve(lastCard.target)
 
         if (loader) {

@@ -1,4 +1,4 @@
-// Using local storage as database
+// LOCAL STORAGE AS DB
 const initialValues = JSON.stringify({
   collections: [],
   loved: [],
@@ -102,15 +102,84 @@ class Database {
   }
 }
 
-// Pexels API
+// IMAGE GALLERY
+class Gallery {
+  constructor() {
+    this.container = document.querySelector(".gallery");
+  }
+
+  clear() {
+    this.container.innerHTML = "";
+  }
+
+  placeholder(data, clear = true) {
+    if (clear) {
+      this.clear();
+    }
+
+    data.forEach(photo => {
+      this.container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="card loading" data-uid="${photo.id || photo}"></div>`
+      );
+    });
+  }
+
+  updateMany(data) {
+    this.placeholder(data.photos, false);
+
+    data.photos.forEach(photo => {
+      this.updateSingle(photo);
+    });
+
+    nextPageURL = data.next_page;
+
+    if (nextPageURL) {
+      //Set observer for infinite scrolling
+      const observeCard = this.container.querySelector(".card:last-child");
+
+      if (observeCard) {
+        observer.observe(observeCard);
+      }
+    }
+  }
+
+  updateSingle(photo) {
+    const target = this.container.querySelector(`[data-uid="${photo.id}"]`);
+
+    if (target) {
+      const image = document.createElement("img");
+      const imageInfo = updateImageInfo(photo);
+
+      image.onload = () => {
+        target.replaceChildren(imageInfo, image);
+        target.classList.remove("loading");
+      };
+
+      image.src = photo.src.large;
+      image.alt = photo.alt;
+      image.loading = "lazy";
+    }
+  }
+}
+
+// PEXELS API
 class Pexels {
   constructor() {
     this.key = "563492ad6f91700001000001705460ee8df94dd1a55897c1d7c04613";
     this.endpoint = "https://api.pexels.com/v1";
   }
 
-  async fetch(url, host = true) {
-    const data = await fetch(host ? this.endpoint + url : url, {
+  set response(data) {
+    if (data.total_results > 0) {
+      gallery.updateMany(data);
+    } else if (data.id) {
+      gallery.updateSingle(data);
+    }
+  }
+
+  async fetch(url, path = true) {
+    const data = await fetch(path ? this.endpoint + url : url, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -121,63 +190,32 @@ class Pexels {
     return await data.json();
   }
 
-  async fetchHome(uid) {
-    const data = await this.fetch(`/curated?per_page=15&page=1`);
-
-    if (data.total_results > 0) {
-      data.uid = uid;
-      loadImages(data, false, false);
-    }
+  async fetchHome() {
+    this.response = await this.fetch(`/curated?per_page=15&page=1`);
   }
 
-  async fetchSearch(query, uid) {
-    const data = await this.fetch(`/search?query=${query}&per_page=15&page=1`);
+  async fetchSearch(query) {
+    this.response = await this.fetch(`/search?query=${query}&per_page=15&page=1`);
 
-    if (data.total_results == 0) {
-      updateResultInfo(query, false);
-    } else {
-      updateResultInfo(query, true);
-      data.uid = uid;
-      loadImages(data);
-    }
+    // TO-DO: Fix search results update
+    // if (data.total_results == 0) {
+    //   updateResultInfo(query, false);
+    // } else {
+    //   updateResultInfo(query, true);
+    // }
   }
 
-  async fetchTag(tag, uid) {
-    const data = await this.fetch(`/search?query=${tag}&per_page=15&page=1`);
+  async fetchTag(tag) {
+    this.response = await this.fetch(`/search?query=${tag}&per_page=15&page=1`);
 
     loader.style.display = "none";
-
-    if (data.total_results > 0) {
-      data.uid = uid;
-      loadImages(data);
-    }
   }
 
-  async fetchSingle(id, index, uid) {
-    const data = await this.fetch(`/photos/${id}`);
-
-    if (data) {
-      loadImages(
-        {
-          total_results: 1,
-          photos: [data],
-          page: 1,
-          next_page: null,
-          index: index,
-          uid: uid,
-        },
-        false,
-        true
-      );
-    }
+  async fetchSingle(id) {
+    this.response = await this.fetch(`/photos/${id}`);
   }
 
-  async fetchNextPage(url, uid) {
-    const data = await this.fetch(url, false);
-
-    if (data.total_results > 0) {
-      data.uid = uid;
-      loadImages(data);
-    }
+  async fetchNextPage(url) {
+    this.response = await this.fetch(url, false);
   }
 }

@@ -42,12 +42,13 @@ function loadTags(tags) {
       curIndex = index;
 
       //Update view
-      clearGallery();
+      //clearGallery();
+      gallery.clear();
       loader.style.display = "flex";
 
       //Load tag photos
       //loadTagSearch(tag, requestUID());
-      pexels.fetchTag(tag, requestUID());
+      pexels.fetchTag(tag);
     });
 
     trendingContainer.append(trendingLink);
@@ -57,4 +58,4 @@ function loadTags(tags) {
 //Feed TRENDING page
 loadTags(randomTags);
 //loadTagSearch(randomTags[curIndex], requestUID());
-pexels.fetchTag(randomTags[curIndex], requestUID());
+pexels.fetchTag(randomTags[curIndex]);
