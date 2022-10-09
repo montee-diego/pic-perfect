@@ -1,3 +1,8 @@
+// Core
+const db = new Database();
+const gallery = new Gallery();
+const pexels = new Pexels();
+
 // Workaround to relative paths for GH Pages and local server or hosting
 const rootDir = (location => {
   const dirTree = location.pathname.split("/");
@@ -10,12 +15,14 @@ const rootDir = (location => {
 })(window.location);
 
 // Navbar searchbar
-const searchInput = document.querySelector(".search-input");
 const searchForm = document.querySelector(".search-form");
 
 searchForm.addEventListener("submit", event => {
   event.preventDefault();
-  sessionStorage.setItem("query", searchInput.value.trim());
+
+  const input = document.querySelector(".search-input");
+
+  sessionStorage.setItem("query", input.value.trim());
   window.location.href = rootDir + "search";
 });
 
@@ -31,43 +38,41 @@ const observer = new IntersectionObserver(
 );
 
 // Variables
-let popupValue;
-const db = new Database();
-const gallery = new Gallery();
-const pexels = new Pexels();
 let photoID;
 
-// Popup event listeners
-const popupForm = document.querySelector(".popup-form");
-const popupInput = document.querySelector(".popup-input");
-const popupContent = document.querySelector(".popup-content");
+// Popup menu
 const popup = document.querySelector(".popup-menu");
+const popupContent = document.querySelector(".popup-content");
+const popupForm = document.querySelector(".popup-form");
 
-popupInput.addEventListener("input", e => {
-  popupValue = e.target.value;
-});
+popupForm.addEventListener("submit", event => {
+  event.preventDefault();
 
-popupForm.addEventListener("submit", e => {
-  e.preventDefault();
-
-  const popupValueTrimmed = popupValue.trim();
-  const response = db.createCollection(popupValueTrimmed);
+  const input = document.querySelector(".popup-input");
+  const name = input.value.trim();
+  const response = db.createCollection(name);
 
   if (response === "FAILED") {
-    popupInput.setCustomValidity("This collection already exists.");
-    popupInput.reportValidity();
-    popupInput.setCustomValidity("");
+    input.setCustomValidity("This collection already exists.");
+    input.reportValidity();
+    input.setCustomValidity("");
   } else {
-    updateCollectionList(popupValueTrimmed);
-    popupInput.value = "";
-    popupValue = "";
+    updateCollectionList(name);
+    input.value = "";
   }
 });
 
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
+// Prompt menu
+const prompt = document.querySelector(".prompt-menu");
+
+// Close popup or prompt with ESC key
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
     popup.classList.remove("popup-active");
-    popupPrompt.classList.remove("popup-active");
+
+    if (prompt) {
+      prompt.classList.remove("popup-active");
+    }
   }
 });
 
@@ -164,8 +169,7 @@ function openCollections(e) {
 
   popupClose.addEventListener("click", () => {
     popup.classList.remove("popup-active");
-    popupInput.value = "";
-    popupValue = "";
+    popupForm.reset();
     photoID = null;
 
     // Clear list
