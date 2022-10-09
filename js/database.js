@@ -142,15 +142,8 @@ class Gallery {
       this.updateSingle(photo);
     });
 
-    nextPageURL = data.next_page;
-
-    if (nextPageURL) {
-      //Set observer for infinite scrolling
-      const observeCard = this.container.querySelector(".card:last-child");
-
-      if (observeCard) {
-        observer.observe(observeCard);
-      }
+    if (this.container.hasChildNodes() && pexels.next) {
+      observer.observe(this.container.querySelector(".card:last-child"));
     }
   }
 
@@ -179,10 +172,12 @@ class Pexels {
     this.key = "563492ad6f91700001000001705460ee8df94dd1a55897c1d7c04613";
     this.endpoint = "https://api.pexels.com/v1";
     this.loader = document.querySelector(".loader");
+    this.next = null;
   }
 
   set response(data) {
     this.loading = false;
+    this.next = data.next_page || null;
 
     if (data.total_results > 0) {
       gallery.updateMany(data);
@@ -234,7 +229,7 @@ class Pexels {
     this.response = await this.fetch(`/photos/${id}`);
   }
 
-  async fetchNextPage(url) {
-    this.response = await this.fetch(url, false);
+  async fetchNextPage() {
+    this.response = await this.fetch(this.next, false);
   }
 }

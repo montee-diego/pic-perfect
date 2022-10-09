@@ -1,26 +1,41 @@
+// Workaround to relative paths for GH Pages and local server or hosting
+const rootDir = (location => {
+  const dirTree = location.pathname.split("/");
+
+  if (dirTree[1] === "pic-perfect") {
+    return "/pic-perfect/";
+  } else {
+    return "/";
+  }
+})(window.location);
+
+// Navbar searchbar
+const searchInput = document.querySelector(".search-input");
+const searchForm = document.querySelector(".search-form");
+
+searchForm.addEventListener("submit", event => {
+  event.preventDefault();
+  sessionStorage.setItem("query", searchInput.value.trim());
+  window.location.href = rootDir + "search";
+});
+
+// Infinite scroll
+const observer = new IntersectionObserver(
+  entries => {
+    if (entries[0].isIntersecting) {
+      pexels.fetchNextPage();
+      observer.unobserve(entries[0].target);
+    }
+  },
+  { rootMargin: "100px" }
+);
+
 // Variables
-let nextPageURL;
-let searchValue;
 let popupValue;
 const db = new Database();
 const gallery = new Gallery();
 const pexels = new Pexels();
 let photoID;
-
-// Element selectors
-const searchInput = document.querySelector(".search-input");
-const searchForm = document.querySelector(".search-form");
-
-// Search event listeners
-searchInput.addEventListener("input", e => {
-  searchValue = e.target.value;
-});
-
-searchForm.addEventListener("submit", e => {
-  e.preventDefault();
-  sessionStorage.setItem("query", searchValue.trim());
-  window.location.href = "/search";
-});
 
 // Popup event listeners
 const popupForm = document.querySelector(".popup-form");
@@ -55,25 +70,6 @@ document.addEventListener("keydown", e => {
     popupPrompt.classList.remove("popup-active");
   }
 });
-
-// INFINITE SCROLL OBSERVER
-const observer = new IntersectionObserver(
-  entries => {
-    const lastCard = entries[0];
-
-    if (lastCard.isIntersecting) {
-      if (nextPageURL) {
-        pexels.fetchNextPage(nextPageURL);
-        observer.unobserve(lastCard.target);
-      }
-    } else {
-      return;
-    }
-  },
-  {
-    rootMargin: "100px",
-  }
-);
 
 // SEARCH INFO
 function updateResultInfo(query, result) {
