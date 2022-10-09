@@ -117,18 +117,28 @@
   &:hover {
     background: $popupHoverColor;
   }
-}
 
-.added {
-  background: transparent;
-  color: $fadedColor;
-  pointer-events: none;
+  &:disabled {
+    color: $fadedColor;
+    pointer-events: none;
 
-  &::after {
-    content: "\2713";
-    margin-left: 0.5rem;
+    &::after {
+      content: "\2713";
+      margin-left: 0.5rem;
+    }
   }
 }
+
+// .added {
+//   background: transparent;
+//   color: $fadedColor;
+//   pointer-events: none;
+
+//   &::after {
+//     content: "\2713";
+//     margin-left: 0.5rem;
+//   }
+// }
 
 .popup-message {
   margin: 1.5rem;

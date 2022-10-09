@@ -6692,13 +6692,12 @@ nav {
   background: #3f3f4e;
 }
 
-.added {
-  background: transparent;
+.popup-item:disabled {
   color: #9a8dac;
   pointer-events: none;
 }
 
-.added::after {
+.popup-item:disabled::after {
   content: "\2713";
   margin-left: 0.5rem;
 }
