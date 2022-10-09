@@ -37,13 +37,62 @@ const observer = new IntersectionObserver(
   { rootMargin: "100px" }
 );
 
-// Variables
-let photoID;
-
-// Popup menu
+// Collections popup
 const popup = document.querySelector(".popup-menu");
 const popupContent = document.querySelector(".popup-content");
 const popupForm = document.querySelector(".popup-form");
+
+function popupAppendItem(name, isInCollection) {
+  //const filterCollections = document.querySelector(".filter-collections");
+  const popupItem = document.createElement("button");
+
+  popupItem.innerText = name;
+  popupItem.classList.add("popup-item");
+
+  if (isInCollection) {
+    popupItem.disabled = true;
+  } else {
+    popupItem.addEventListener("click", popupAddToCollection);
+  }
+
+  popupContent.append(popupItem);
+
+  // if (filterCollections) {
+  //   loadCollections([{ name: "Loved" }, ...db.collections]);
+  // }
+}
+
+function popupAddToCollection(event) {
+  const response = db.addToCollection(event.target.innerText, popup.uid);
+
+  if (response !== "FAILED") {
+    event.target.disabled = true;
+    event.target.removeEventListener("click", popupAddToCollection);
+  }
+}
+
+function popupLoadCollections(event) {
+  const popupClose = document.querySelector(".popup-close");
+  const popupTarget = getCardUID(e.target);
+
+  db.collections.forEach(collection => {
+    popupAppendItem(collection.name, collection.items.includes(popupTarget));
+  });
+
+  popup.classList.add("popup-active");
+  popup.uid = popupTarget;
+
+  popupClose.addEventListener("click", () => {
+    popup.classList.remove("popup-active");
+    popup.uid = null;
+    popupForm.reset();
+
+    // Clear list
+    while (popupContent.hasChildNodes()) {
+      popupContent.removeChild(popupContent.lastChild);
+    }
+  });
+}
 
 popupForm.addEventListener("submit", event => {
   event.preventDefault();
@@ -57,7 +106,7 @@ popupForm.addEventListener("submit", event => {
     input.reportValidity();
     input.setCustomValidity("");
   } else {
-    updateCollectionList(name);
+    popupAppendItem(name);
     input.value = "";
   }
 });
@@ -65,10 +114,38 @@ popupForm.addEventListener("submit", event => {
 // Prompt menu
 const prompt = document.querySelector(".prompt-menu");
 
+function promptActionRemovePhoto(event) {
+  const response = db.removeFromCollection(inView, popupPrompt.uid);
+
+  if (response !== "FAILED") {
+    gallery.remove(popupPrompt.uid);
+    popupPrompt.uid = null;
+    popupPrompt.classList.remove("popup-active");
+  }
+}
+
+function promptActionRemoveCollection(event) {
+  const response = db.removeCollection(popupPrompt.name);
+
+  if (response !== "FAILED") {
+    if (inView == popupPrompt.name) {
+      gallery.clear();
+      inView = "";
+    }
+
+    loadCollections([{ name: "Loved" }, ...db.collections]);
+  }
+
+  popupPrompt.name = null;
+  popupPrompt.classList.remove("popup-active");
+}
+
 // Close popup or prompt with ESC key
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") {
-    popup.classList.remove("popup-active");
+    if (popup) {
+      popup.classList.remove("popup-active");
+    }
 
     if (prompt) {
       prompt.classList.remove("popup-active");
@@ -103,7 +180,7 @@ function updateImageInfo(photo) {
   btnDownload.innerHTML = '<i class="fas fa-download"></i>';
 
   btnCollection.classList.add("card-icon");
-  btnCollection.addEventListener("click", openCollections);
+  btnCollection.addEventListener("click", popupLoadCollections);
   btnCollection.innerHTML = '<i class="fas fa-plus"></i>';
 
   btnLove.classList.add("card-icon");
@@ -143,61 +220,6 @@ function updateLovedPhoto(e) {
   db.setLoved(e.target.parentNode.dataset.id, e.target);
 }
 
-// COLLECTIONS
-function openCollections(e) {
-  const popupClose = document.querySelector(".popup-close");
-
-  photoID = e.target.parentNode.dataset.id;
-
-  // Generate menu for selected photo
-  db.collections.forEach(collection => {
-    const popupItem = document.createElement("button");
-
-    popupItem.innerText = collection.name;
-    popupItem.classList.add("popup-item");
-
-    if (collection.items.includes(photoID)) {
-      popupItem.classList.add("added");
-    } else {
-      popupItem.addEventListener("click", updateCollectionDB);
-    }
-
-    popupContent.append(popupItem);
-  });
-
-  popup.classList.add("popup-active");
-
-  popupClose.addEventListener("click", () => {
-    popup.classList.remove("popup-active");
-    popupForm.reset();
-    photoID = null;
-
-    // Clear list
-    while (popupContent.hasChildNodes()) {
-      popupContent.removeChild(popupContent.lastChild);
-    }
-  });
-}
-
-function updateCollectionList(name) {
-  const trendingContainer = document.querySelector(".filter-collections");
-  const popupItem = document.createElement("button");
-
-  popupItem.innerText = name;
-  popupItem.classList.add("popup-item");
-  popupItem.addEventListener("click", updateCollectionDB);
-
-  popupContent.append(popupItem);
-
-  if (trendingContainer) {
-    loadCollections([{ name: "Loved" }, ...db.collections]);
-  }
-}
-
-function updateCollectionDB(e) {
-  e.target.classList.add("added");
-
-  const name = e.target.innerText;
-
-  db.addToCollection(name, photoID);
+function getCardUID(from) {
+  return from.closest(".card").dataset.uid;
 }

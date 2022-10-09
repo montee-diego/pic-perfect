@@ -1,15 +1,18 @@
 // Select elements
 const trendingContainer = document.querySelector(".filter-collections");
+// popupPrompt will be "prompt" from ".prompt-menu" after moving logic to app file
 const popupPrompt = document.querySelector(".popup-prompt");
 const promptClose = document.querySelector(".prompt-close");
 const promptCancel = document.querySelector(".cancel-btn");
 
 // Event listeners
 promptClose.addEventListener("click", () => {
+  popupPrompt.uid = null;
   popupPrompt.classList.remove("popup-active");
 });
 
 promptCancel.addEventListener("click", () => {
+  popupPrompt.uid = null;
   popupPrompt.classList.remove("popup-active");
 });
 
@@ -96,59 +99,35 @@ function loadCollection(event) {
 
 // OPEN REMOVE COLLECTION PROMPT
 function openPrompt(e) {
-  const name = e.target.previousElementSibling.innerText;
+  popupPrompt.name = e.target.previousElementSibling.innerText;
+  //const name = e.target.previousElementSibling.innerText;
   const message = "All of its content will be removed. This action cannot be undone.";
 
   const promptAction = document.querySelector(".remove-btn");
   const promptTitle = document.querySelector(".prompt-title");
   const promptMessage = document.querySelector(".popup-message p");
 
-  promptAction.removeEventListener("click", removePhoto);
+  promptAction.removeEventListener("click", promptActionRemovePhoto);
   promptTitle.innerText = "Remove collection";
-  promptMessage.innerText = `Remove "${name}" collection? ${message}`;
+  promptMessage.innerText = `Remove "${popupPrompt.name}" collection? ${message}`;
   popupPrompt.classList.add("popup-active");
-  promptAction.dataset.name = name;
-  promptAction.addEventListener("click", removeCollection);
+  //promptAction.dataset.name = name;
+  promptAction.addEventListener("click", promptActionRemoveCollection);
 }
 
 // OPEN REMOVE PHOTO PROMPT
 function openRemovePrompt(e) {
-  photoID = e.target.previousElementSibling.dataset.id;
+  popupPrompt.uid = getCardUID(e.target);
 
   const promptAction = document.querySelector(".remove-btn");
   const promptTitle = document.querySelector(".prompt-title");
   const promptMessage = document.querySelector(".popup-message p");
 
-  promptAction.removeEventListener("click", removeCollection);
+  promptAction.removeEventListener("click", promptActionRemoveCollection);
   promptTitle.innerText = "Remove photo";
   promptMessage.innerText = "Remove photo from this collection?";
-  promptAction.addEventListener("click", removePhoto);
+  promptAction.addEventListener("click", promptActionRemovePhoto);
   popupPrompt.classList.add("popup-active");
-}
-
-function removePhoto(e) {
-  db.removeFromCollection(inView, photoID);
-  gallery.remove(photoID);
-
-  popupPrompt.classList.remove("popup-active");
-  photoID = null;
-}
-
-// REMOVE COLLECTION AND ITS CONTENT
-function removeCollection(e) {
-  const name = e.target.dataset.name;
-
-  db.removeCollection(name);
-
-  if (inView == name) {
-    gallery.clear();
-    inView = "";
-  }
-
-  loadCollections([{ name: "Loved" }, ...db.collections]);
-
-  // Close popup
-  popupPrompt.classList.remove("popup-active");
 }
 
 // Feed COLLECTIONS page
