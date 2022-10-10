@@ -2,6 +2,7 @@
 const db = new Database();
 const gallery = new Gallery();
 const pexels = new Pexels();
+const collections = new Collections();
 
 // Workaround to relative paths for GH Pages and local server or hosting
 const rootDir = (location => {
@@ -43,7 +44,6 @@ const popupContent = document.querySelector(".popup-content");
 const popupForm = document.querySelector(".popup-form");
 
 function popupAppendItem(name, isInCollection) {
-  //const filterCollections = document.querySelector(".filter-collections");
   const popupItem = document.createElement("button");
 
   popupItem.innerText = name;
@@ -56,10 +56,6 @@ function popupAppendItem(name, isInCollection) {
   }
 
   popupContent.append(popupItem);
-
-  // if (filterCollections) {
-  //   loadCollections([{ name: "Loved" }, ...db.collections]);
-  // }
 }
 
 function popupAddToCollection(event) {
@@ -73,7 +69,7 @@ function popupAddToCollection(event) {
 
 function popupLoadCollections(event) {
   const popupClose = document.querySelector(".popup-close");
-  const popupTarget = getCardUID(e.target);
+  const popupTarget = getCardUID(event.target);
 
   db.collections.forEach(collection => {
     popupAppendItem(collection.name, collection.items.includes(popupTarget));
@@ -108,36 +104,92 @@ popupForm.addEventListener("submit", event => {
   } else {
     popupAppendItem(name);
     input.value = "";
+
+    if (collections.container) {
+      collections.insertTag(name);
+    }
   }
 });
 
 // Prompt menu
 const prompt = document.querySelector(".prompt-menu");
 
+function promptRemoveCollection(event) {
+  prompt.name = event.target.previousElementSibling.innerText;
+
+  promptUpdate({
+    title: `Remove "${prompt.name}" Collection`,
+    message: "Are you sure? All of its content will be removed. This action cannot be undone.",
+    type: "COLLECTION",
+  });
+}
+
+function promptRemovePhoto(event) {
+  prompt.uid = getCardUID(event.target);
+
+  promptUpdate({
+    title: "Remove Photo",
+    message: "Remove photo from this collection?",
+    type: "PHOTO",
+  });
+}
+
+function promptUpdate(data) {
+  const promptAction = document.querySelector(".remove-btn");
+  const promptTitle = document.querySelector(".prompt-title");
+  const promptMessage = document.querySelector(".popup-message p");
+
+  promptTitle.innerText = data.title;
+  promptMessage.innerText = data.message;
+
+  if (data.type === "COLLECTION") {
+    promptAction.removeEventListener("click", promptActionRemovePhoto);
+    promptAction.addEventListener("click", promptActionRemoveCollection);
+  } else {
+    promptAction.removeEventListener("click", promptActionRemoveCollection);
+    promptAction.addEventListener("click", promptActionRemovePhoto);
+  }
+
+  prompt.classList.add("popup-active");
+}
+
 function promptActionRemovePhoto(event) {
-  const response = db.removeFromCollection(inView, popupPrompt.uid);
+  const response = db.removeFromCollection(collections.active, prompt.uid);
 
   if (response !== "FAILED") {
-    gallery.remove(popupPrompt.uid);
-    popupPrompt.uid = null;
-    popupPrompt.classList.remove("popup-active");
+    gallery.remove(prompt.uid);
   }
+
+  promptClose();
 }
 
 function promptActionRemoveCollection(event) {
-  const response = db.removeCollection(popupPrompt.name);
+  const response = db.removeCollection(prompt.name);
 
   if (response !== "FAILED") {
-    if (inView == popupPrompt.name) {
+    if (collections.active == prompt.name) {
       gallery.clear();
-      inView = "";
+      collections.active = "";
     }
 
-    loadCollections([{ name: "Loved" }, ...db.collections]);
+    collections.removeTag(prompt.name);
   }
 
-  popupPrompt.name = null;
-  popupPrompt.classList.remove("popup-active");
+  promptClose();
+}
+
+function promptClose(event) {
+  prompt.uid = null;
+  prompt.name = null;
+  prompt.classList.remove("popup-active");
+}
+
+if (prompt) {
+  const promptCloseBtn = document.querySelector(".prompt-close");
+  const promptCancelBtn = document.querySelector(".cancel-btn");
+
+  promptCloseBtn.addEventListener("click", promptClose);
+  promptCancelBtn.addEventListener("click", promptClose);
 }
 
 // Close popup or prompt with ESC key
@@ -165,7 +217,6 @@ function updateResultInfo(query, result) {
 }
 
 function updateImageInfo(photo) {
-  const trendingContainer = document.querySelector(".filter-collections");
   const photoLoved = db.findLoved(photo.id);
   const photoInfo = document.createElement("div");
   const photoArtist = document.createElement("a");
@@ -204,11 +255,12 @@ function updateImageInfo(photo) {
   photoInfo.classList.add("card-info");
   photoInfo.append(photoArtist, photoAction);
 
-  if (trendingContainer) {
+  if (collections.container && collections.active !== "Loved") {
     const btnRemove = document.createElement("button");
+
     btnRemove.innerHTML = '<i class="fas fa-times"></i>';
     btnRemove.classList.add("card-remove");
-    btnRemove.addEventListener("click", openRemovePrompt);
+    btnRemove.addEventListener("click", promptRemovePhoto);
     photoInfo.append(btnRemove);
   }
 

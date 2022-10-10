@@ -233,3 +233,106 @@ class Pexels {
     this.response = await this.fetch(this.next, false);
   }
 }
+
+class Collections {
+  constructor() {
+    this.container = document.querySelector(".filter-collections");
+    this.active = "";
+    this.timer = null;
+  }
+
+  clear() {
+    while (this.container.hasChildNodes()) {
+      this.container.removeChild(this.container.lastChild);
+    }
+  }
+
+  renderAll() {
+    const collections = [{ name: "Loved" }, ...db.collections];
+
+    collections.forEach(collection => {
+      this.insertTag(collection.name);
+    });
+  }
+
+  removeTag(name) {
+    const tags = this.container.querySelectorAll(".tag");
+
+    tags.forEach(tag => {
+      if (tag.firstElementChild.textContent == name) {
+        this.container.removeChild(tag);
+      }
+    });
+  }
+
+  insertTag(name) {
+    const itemWrapper = document.createElement("div");
+    const itemName = document.createElement("a");
+    const itemRemove = document.createElement("button");
+
+    itemWrapper.classList.add("tag");
+
+    if (this.active == name) {
+      itemWrapper.classList.add("active");
+    }
+
+    itemName.innerText = name;
+    itemName.addEventListener("click", this.load.bind(this));
+    itemRemove.innerHTML = '<i class="fas fa-times"></i>';
+
+    if (name === "Loved") {
+      itemWrapper.append(itemName);
+    } else {
+      itemRemove.addEventListener("click", promptRemoveCollection);
+      itemWrapper.append(itemName, itemRemove);
+    }
+
+    this.container.append(itemWrapper);
+  }
+
+  load(event) {
+    const name = event.target.textContent;
+
+    if (name == this.active) {
+      return;
+    } else {
+      const active = this.container.querySelector(".tag.active");
+
+      if (active) {
+        active.classList.remove("active");
+      }
+
+      event.target.parentNode.classList.add("active");
+      this.active = name;
+    }
+
+    let cur = 0;
+    let photos;
+
+    if (this.timer) {
+      window.clearInterval(this.timer);
+    }
+
+    if (name === "Loved") {
+      photos = db.loved;
+    } else {
+      photos = db.getCollectionItems(name);
+    }
+
+    if (photos.length) {
+      gallery.placeholder(photos);
+
+      this.timer = window.setInterval(() => {
+        if (photos.length - 1 == cur) {
+          window.clearInterval(this.timer);
+          this.timer = null;
+        }
+
+        pexels.fetchSingle(photos[cur]);
+        cur++;
+      }, 1000);
+    } else {
+      gallery.clear();
+    }
+  }
+}
