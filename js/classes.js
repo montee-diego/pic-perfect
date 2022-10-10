@@ -152,7 +152,7 @@ class Gallery {
 
     if (target) {
       const image = document.createElement("img");
-      const imageInfo = updateImageInfo(photo);
+      const imageInfo = this.setCardContent(photo);
 
       image.onload = () => {
         target.replaceChildren(imageInfo, image);
@@ -164,6 +164,69 @@ class Gallery {
       image.loading = "lazy";
     }
   }
+
+  updateResults(data) {
+    const searchInfo = document.querySelector(".search-info");
+
+    if (searchInfo) {
+      if (data.total_results > 0) {
+        searchInfo.innerText = `Search results for "${pexels.query}" (${data.total_results})`;
+      } else {
+        searchInfo.innerText = `No results for "${query}"`;
+      }
+    }
+  }
+
+  setCardContent(photo) {
+    const photoLoved = db.findLoved(photo.id);
+    const photoInfo = document.createElement("div");
+    const photoArtist = document.createElement("a");
+    const photoAction = document.createElement("div");
+    const btnDownload = document.createElement("a");
+    const btnCollection = document.createElement("button");
+    const btnLove = document.createElement("button");
+
+    btnDownload.href = `${photo.src.original}?dl=`;
+    btnDownload.download = true;
+    btnDownload.classList.add("card-icon");
+    btnDownload.innerHTML = '<i class="fas fa-download"></i>';
+
+    btnCollection.classList.add("card-icon");
+    btnCollection.addEventListener("click", popupLoadCollections);
+    btnCollection.innerHTML = '<i class="fas fa-plus"></i>';
+
+    btnLove.classList.add("card-icon");
+    btnLove.addEventListener("click", updateLovedPhoto);
+
+    if (photoLoved > -1) {
+      btnLove.innerHTML = '<i class="fas fa-heart"></i>';
+    } else {
+      btnLove.innerHTML = '<i class="far fa-heart"></i>';
+    }
+
+    photoArtist.href = photo.photographer_url;
+    photoArtist.target = "_blank";
+    photoArtist.innerText = photo.photographer;
+    photoArtist.classList.add("card-artist");
+
+    photoAction.dataset.id = photo.id;
+    photoAction.classList.add("card-action");
+    photoAction.append(btnDownload, btnCollection, btnLove);
+
+    photoInfo.classList.add("card-info");
+    photoInfo.append(photoArtist, photoAction);
+
+    if (collections.container && collections.active !== "Loved") {
+      const btnRemove = document.createElement("button");
+
+      btnRemove.innerHTML = '<i class="fas fa-times"></i>';
+      btnRemove.classList.add("card-remove");
+      btnRemove.addEventListener("click", promptRemovePhoto);
+      photoInfo.append(btnRemove);
+    }
+
+    return photoInfo;
+  }
 }
 
 // PEXELS API
@@ -173,11 +236,14 @@ class Pexels {
     this.endpoint = "https://api.pexels.com/v1";
     this.loader = document.querySelector(".loader");
     this.next = null;
+    this.query = "";
   }
 
   set response(data) {
     this.loading = false;
     this.next = data.next_page || null;
+
+    gallery.updateResults(data);
 
     if (data.total_results > 0) {
       gallery.updateMany(data);
@@ -211,9 +277,9 @@ class Pexels {
   }
 
   async fetchSearch(query) {
+    this.query = query;
     this.response = await this.fetch(`/search?query=${query}&per_page=15&page=1`);
 
-    // TO-DO: Fix search results update
     // if (data.total_results == 0) {
     //   updateResultInfo(query, false);
     // } else {
