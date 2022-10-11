@@ -36,7 +36,7 @@ nav {
   @include flex(center, center, row);
   background: $highlightColor;
   border-radius: 3px;
-  margin-left: 10px;
+  gap: 0.5rem;
 }
 
 .search-input {

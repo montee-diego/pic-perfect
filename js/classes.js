@@ -161,7 +161,6 @@ class Gallery {
 
       image.src = photo.src.large;
       image.alt = photo.alt;
-      image.loading = "lazy";
     }
   }
 
@@ -279,12 +278,6 @@ class Pexels {
   async fetchSearch(query) {
     this.query = query;
     this.response = await this.fetch(`/search?query=${query}&per_page=15&page=1`);
-
-    // if (data.total_results == 0) {
-    //   updateResultInfo(query, false);
-    // } else {
-    //   updateResultInfo(query, true);
-    // }
   }
 
   async fetchTag(tag) {

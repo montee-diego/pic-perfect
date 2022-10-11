@@ -1,4 +1,4 @@
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 768px) {
   nav {
     @include flex(center, stretch, column);
   }
@@ -47,14 +47,10 @@
   .legals {
     text-align: center;
   }
+}
 
-  .socials {
-    width: 100%;
-    justify-content: space-evenly;
-
-    a {
-      margin: 0;
-      padding: 0;
-    }
+@media screen and (max-width: 512px) {
+  .gallery {
+    grid-template-columns: 1fr;
   }
 }
