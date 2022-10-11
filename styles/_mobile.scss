@@ -50,6 +50,10 @@
 }
 
 @media screen and (max-width: 512px) {
+  .search-form {
+    min-width: auto;
+  }
+
   .gallery {
     grid-template-columns: 1fr;
   }
