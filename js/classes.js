@@ -88,9 +88,11 @@ class Database {
 
     if (index > -1) {
       this.loved.splice(index, 1);
+      target.ariaLabel = "Love photo";
       target.innerHTML = '<i class="far fa-heart"></i>';
     } else {
       this.loved.push(id);
+      target.ariaLabel = "Unlove photo";
       target.innerHTML = '<i class="fas fa-heart"></i>';
     }
 
@@ -187,9 +189,11 @@ class Gallery {
 
     btnDownload.href = `${photo.src.original}?dl=`;
     btnDownload.download = true;
+    btnDownload.ariaLabel = "Download";
     btnDownload.classList.add("card-icon");
     btnDownload.innerHTML = '<i class="fas fa-download"></i>';
 
+    btnCollection.ariaLabel = "Open collections";
     btnCollection.classList.add("card-icon");
     btnCollection.addEventListener("click", popupLoadCollections);
     btnCollection.innerHTML = '<i class="fas fa-plus"></i>';
@@ -198,8 +202,10 @@ class Gallery {
     btnLove.addEventListener("click", updateLovedPhoto);
 
     if (photoLoved > -1) {
+      btnLove.ariaLabel = "Unlove photo";
       btnLove.innerHTML = '<i class="fas fa-heart"></i>';
     } else {
+      btnLove.ariaLabel = "Love photo";
       btnLove.innerHTML = '<i class="far fa-heart"></i>';
     }
 
@@ -218,6 +224,7 @@ class Gallery {
     if (collections.container && collections.active !== "Loved") {
       const btnRemove = document.createElement("button");
 
+      btnRemove.ariaLabel = "Remove photo";
       btnRemove.innerHTML = '<i class="fas fa-times"></i>';
       btnRemove.classList.add("card-remove");
       btnRemove.addEventListener("click", promptRemovePhoto);
@@ -337,6 +344,7 @@ class Collections {
 
     itemName.innerText = name;
     itemName.addEventListener("click", this.load.bind(this));
+    itemRemove.ariaLabel = "Remove collection";
     itemRemove.innerHTML = '<i class="fas fa-times"></i>';
 
     if (name === "Loved") {
